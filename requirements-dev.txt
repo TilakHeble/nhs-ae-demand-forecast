@@ -1,0 +1,7 @@
+# full pipeline (data build, models, backtest)
+-r requirements.txt
+statsmodels>=0.14
+lightgbm>=4.3
+scikit-learn>=1.4
+xlrd>=2.0
+pyarrow>=15

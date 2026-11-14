@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+.DS_Store
+# large row-level backtest outputs (rebuild with `make backtest`); summaries are committed
+results/backtest_*_impute.parquet
+results/backtest_*_post.parquet
+results/backtest_*_none.parquet

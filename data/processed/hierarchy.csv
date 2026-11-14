@@ -1,0 +1,121 @@
+trust_code,icb_code,icb_name,region_name,trust_name
+R0A,QOP,Greater Manchester ICB,North West,Manchester University NHS Foundation Trust
+R0B,QHM,North East And North Cumbria ICB,North East and Yorkshire,South Tyneside And Sunderland NHS Foundation Trust
+R0D,QVV,Dorset ICB,South West,University Hospitals Dorset NHS Foundation Trust
+R1F,QRL,Hampshire And Isle Of Wight ICB,South East,Isle Of Wight NHS Trust
+R1H,QMF,North East London ICB,London,Barts Health NHS Trust
+R1K,Z9B2Z,West and North London ICB,London,London North West University Healthcare NHS Trust
+RA2,S9B9J,Surrey and Sussex ICB,South East,Royal Surrey NHS Foundation Trust
+RA7,QUY,"Bristol, North Somerset And South Gloucestershire ICB",South West,Bristol NHS Foundation Trust
+RA9,QJK,Devon ICB,South West,Torbay And South Devon NHS Foundation Trust
+RAE,QWO,West Yorkshire ICB,North East and Yorkshire,Bradford Teaching Hospitals NHS Foundation Trust
+RAJ,D7T5G,Essex ICB,East of England,Mid And South Essex NHS Foundation Trust
+RAL,Z9B2Z,West and North London ICB,London,Royal Free London NHS Foundation Trust
+RAS,Z9B2Z,West and North London ICB,London,The Hillingdon Hospitals NHS Foundation Trust
+RAX,QWE,South West London ICB,London,Kingston And Richmond NHS Foundation Trust
+RBD,QVV,Dorset ICB,South West,Dorset County Hospital NHS Foundation Trust
+RBK,QUA,Black Country ICB,Midlands,Walsall Healthcare NHS Trust
+RBL,QYG,Cheshire And Merseyside ICB,North West,Wirral University Teaching Hospital NHS Foundation Trust
+RBN,QYG,Cheshire And Merseyside ICB,North West,Mersey And West Lancashire Teaching Hospitals NHS Trust
+RBS,QYG,Cheshire And Merseyside ICB,North West,Alder Hey Children'S NHS Foundation Trust
+RBT,QYG,Cheshire And Merseyside ICB,North West,Mid Cheshire Hospitals NHS Foundation Trust
+RC9,S1Y5D,Central East ICB,East of England,Bedfordshire Hospitals NHS Foundation Trust
+RCB,QOQ,Humber And North Yorkshire ICB,North East and Yorkshire,York And Scarborough Teaching Hospitals NHS Foundation Trust
+RCD,QOQ,Humber And North Yorkshire ICB,North East and Yorkshire,Harrogate And District NHS Foundation Trust
+RCF,QWO,West Yorkshire ICB,North East and Yorkshire,Airedale NHS Foundation Trust
+RCU,QF7,South Yorkshire ICB,North East and Yorkshire,Sheffield Children'S NHS Foundation Trust
+RCX,T6Y0W,Norfolk and Suffolk ICB,East of England,"The Queen Elizabeth Hospital, King'S Lynn, NHS Foundation Trust"
+RD1,QOX,"Bath And North East Somerset, Swindon And Wiltshire ICB",South West,Royal United Hospitals Bath NHS Foundation Trust
+RD8,S1Y5D,Central East ICB,East of England,Milton Keynes University Hospital NHS Foundation Trust
+RDE,T6Y0W,Norfolk and Suffolk ICB,East of England,East Suffolk And North Essex NHS Foundation Trust
+RDU,S0E4D,Thames Valley ICB,South East,Frimley Health NHS Foundation Trust
+REF,QT6,Cornwall And The Isles Of Scilly ICB,South West,Royal Cornwall Hospitals NHS Trust
+REM,QYG,Cheshire And Merseyside ICB,North West,Liverpool University Hospitals NHS Foundation Trust
+RF4,QMF,North East London ICB,London,"Barking, Havering And Redbridge University Hospitals NHS Trust"
+RFF,QF7,South Yorkshire ICB,North East and Yorkshire,Barnsley Hospital NHS Foundation Trust
+RFR,QF7,South Yorkshire ICB,North East and Yorkshire,The Rotherham NHS Foundation Trust
+RFS,QJ2,Derby And Derbyshire ICB,Midlands,Chesterfield Royal Hospital NHS Foundation Trust
+RGN,S1Y5D,Central East ICB,East of England,North West Anglia NHS Foundation Trust
+RGP,T6Y0W,Norfolk and Suffolk ICB,East of England,James Paget University Hospitals NHS Foundation Trust
+RGR,T6Y0W,Norfolk and Suffolk ICB,East of England,West Suffolk NHS Foundation Trust
+RGT,S1Y5D,Central East ICB,East of England,Cambridge University Hospitals NHS Foundation Trust
+RH5,QSL,Somerset ICB,South West,Somerset NHS Foundation Trust
+RH8,QJK,Devon ICB,South West,Royal Devon University Healthcare NHS Foundation Trust
+RHM,QRL,Hampshire And Isle Of Wight ICB,South East,University Hospital Southampton NHS Foundation Trust
+RHQ,QF7,South Yorkshire ICB,North East and Yorkshire,Sheffield Teaching Hospitals NHS Foundation Trust
+RHU,QRL,Hampshire And Isle Of Wight ICB,South East,Portsmouth Hospitals University NHS Trust
+RHW,S0E4D,Thames Valley ICB,South East,Royal Berkshire NHS Foundation Trust
+RJ1,QKK,South East London ICB,London,Guy'S And St Thomas' NHS Foundation Trust
+RJ2,QKK,South East London ICB,London,Lewisham And Greenwich NHS Trust
+RJ6,QWE,South West London ICB,London,Croydon Health Services NHS Trust
+RJ7,QWE,South West London ICB,London,St George'S University Hospitals NHS Foundation Trust
+RJC,QWU,Coventry And Warwickshire ICB,Midlands,South Warwickshire University NHS Foundation Trust
+RJE,QNC,Staffordshire And Stoke-On-Trent ICB,Midlands,University Hospitals Of North Midlands NHS Trust
+RJL,QOQ,Humber And North Yorkshire ICB,North East and Yorkshire,Northern Lincolnshire And Goole NHS Foundation Trust
+RJN,QYG,Cheshire And Merseyside ICB,North West,East Cheshire NHS Trust
+RJR,QYG,Cheshire And Merseyside ICB,North West,Countess Of Chester Hospital NHS Foundation Trust
+RJZ,QKK,South East London ICB,London,King'S College Hospital NHS Foundation Trust
+RK5,QT1,Nottingham And Nottinghamshire ICB,Midlands,Sherwood Forest Hospitals NHS Foundation Trust
+RK9,QJK,Devon ICB,South West,University Hospitals Plymouth NHS Trust
+RKB,QWU,Coventry And Warwickshire ICB,Midlands,University Hospitals Coventry And Warwickshire NHS Trust
+RKE,Z9B2Z,West and North London ICB,London,Whittington Health NHS Trust
+RL4,QUA,Black Country ICB,Midlands,The Royal Wolverhampton NHS Trust
+RLQ,QGH,Herefordshire And Worcestershire ICB,Midlands,Wye Valley NHS Trust
+RLT,QWU,Coventry And Warwickshire ICB,Midlands,George Eliot Hospital NHS Trust
+RM1,T6Y0W,Norfolk and Suffolk ICB,East of England,Norfolk And Norwich University Hospitals NHS Foundation Trust
+RM3,QOP,Greater Manchester ICB,North West,Northern Care Alliance NHS Foundation Trust
+RMC,QOP,Greater Manchester ICB,North West,Bolton NHS Foundation Trust
+RMP,QOP,Greater Manchester ICB,North West,Tameside And Glossop Integrated Care NHS Foundation Trust
+RN3,QOX,"Bath And North East Somerset, Swindon And Wiltshire ICB",South West,Great Western Hospitals NHS Foundation Trust
+RN5,QRL,Hampshire And Isle Of Wight ICB,South East,Hampshire Hospitals NHS Foundation Trust
+RN7,QKS,Kent And Medway ICB,South East,Dartford And Gravesham NHS Trust
+RNA,QUA,Black Country ICB,Midlands,The Dudley Group NHS Foundation Trust
+RNN,QHM,North East And North Cumbria ICB,North East and Yorkshire,North Cumbria Integrated Care NHS Foundation Trust
+RNQ,QPM,Northamptonshire ICB,Midlands,Kettering General Hospital NHS Foundation Trust
+RNS,QPM,Northamptonshire ICB,Midlands,Northampton General Hospital NHS Trust
+RNZ,QOX,"Bath And North East Somerset, Swindon And Wiltshire ICB",South West,Salisbury NHS Foundation Trust
+RP5,QF7,South Yorkshire ICB,North East and Yorkshire,Doncaster And Bassetlaw Teaching Hospitals NHS Foundation Trust
+RPA,QKS,Kent And Medway ICB,South East,Medway NHS Foundation Trust
+RQ3,QHL,Birmingham And Solihull ICB,Midlands,Birmingham Women'S And Children'S NHS Foundation Trust
+RQM,Z9B2Z,West and North London ICB,London,Chelsea And Westminster Hospital NHS Foundation Trust
+RQW,D7T5G,Essex ICB,East of England,The Princess Alexandra Hospital NHS Trust
+RQX,QMF,North East London ICB,London,Homerton Healthcare NHS Foundation Trust
+RR7,QHM,North East And North Cumbria ICB,North East and Yorkshire,Gateshead Health NHS Foundation Trust
+RR8,QWO,West Yorkshire ICB,North East and Yorkshire,Leeds Teaching Hospitals NHS Trust
+RRF,QOP,Greater Manchester ICB,North West,"Wrightington, Wigan And Leigh Teaching Hospitals NHS Foundation Trust"
+RRK,QHL,Birmingham And Solihull ICB,Midlands,University Hospitals Birmingham NHS Foundation Trust
+RRV,Z9B2Z,West and North London ICB,London,University College London Hospitals NHS Foundation Trust
+RTD,QHM,North East And North Cumbria ICB,North East and Yorkshire,The Newcastle Upon Tyne Hospitals NHS Foundation Trust
+RTE,QR1,Gloucestershire ICB,South West,Gloucestershire Hospitals NHS Foundation Trust
+RTF,QHM,North East And North Cumbria ICB,North East and Yorkshire,Northumbria Healthcare NHS Foundation Trust
+RTG,QJ2,Derby And Derbyshire ICB,Midlands,University Hospitals Of Derby And Burton NHS Foundation Trust
+RTH,S0E4D,Thames Valley ICB,South East,Oxford University Hospitals NHS Foundation Trust
+RTK,S9B9J,Surrey and Sussex ICB,South East,Ashford And St Peter'S Hospitals NHS Foundation Trust
+RTP,S9B9J,Surrey and Sussex ICB,South East,Surrey And Sussex Healthcare NHS Trust
+RTR,QHM,North East And North Cumbria ICB,North East and Yorkshire,South Tees Hospitals NHS Foundation Trust
+RTX,QE1,Lancashire And South Cumbria ICB,North West,University Hospitals Of Morecambe Bay NHS Foundation Trust
+RVR,QWE,South West London ICB,London,Epsom And St Helier University Hospitals NHS Trust
+RVV,QKS,Kent And Medway ICB,South East,East Kent Hospitals University NHS Foundation Trust
+RVW,QHM,North East And North Cumbria ICB,North East and Yorkshire,North Tees And Hartlepool NHS Foundation Trust
+RWA,QOQ,Humber And North Yorkshire ICB,North East and Yorkshire,Hull University Teaching Hospitals NHS Trust
+RWD,QJM,Lincolnshire ICB,Midlands,United Lincolnshire Teaching Hospitals NHS Trust
+RWE,QK1,"Leicester, Leicestershire And Rutland ICB",Midlands,University Hospitals Of Leicester NHS Trust
+RWF,QKS,Kent And Medway ICB,South East,Maidstone And Tunbridge Wells NHS Trust
+RWG,S1Y5D,Central East ICB,East of England,West Hertfordshire Teaching Hospitals NHS Trust
+RWH,S1Y5D,Central East ICB,East of England,East And North Hertfordshire Teaching NHS Trust
+RWJ,QOP,Greater Manchester ICB,North West,Stockport NHS Foundation Trust
+RWP,QGH,Herefordshire And Worcestershire ICB,Midlands,Worcestershire Acute Hospitals NHS Trust
+RWW,QYG,Cheshire And Merseyside ICB,North West,North Cheshire And Mersey NHS Foundation Trust
+RWY,QWO,West Yorkshire ICB,North East and Yorkshire,Calderdale And Huddersfield NHS Foundation Trust
+RX1,QT1,Nottingham And Nottinghamshire ICB,Midlands,Nottingham University Hospitals NHS Trust
+RXC,S9B9J,Surrey and Sussex ICB,South East,East Sussex Healthcare NHS Trust
+RXF,QWO,West Yorkshire ICB,North East and Yorkshire,Mid Yorkshire Teaching NHS Trust
+RXK,QUA,Black Country ICB,Midlands,Sandwell And West Birmingham Hospitals NHS Trust
+RXL,QE1,Lancashire And South Cumbria ICB,North West,Blackpool Teaching Hospitals NHS Foundation Trust
+RXN,QE1,Lancashire And South Cumbria ICB,North West,Lancashire Teaching Hospitals NHS Foundation Trust
+RXP,QHM,North East And North Cumbria ICB,North East and Yorkshire,County Durham And Darlington NHS Foundation Trust
+RXQ,S0E4D,Thames Valley ICB,South East,Buckinghamshire Healthcare NHS Trust
+RXR,QE1,Lancashire And South Cumbria ICB,North West,East Lancashire Hospitals NHS Trust
+RXW,QOC,"Shropshire, Telford And Wrekin ICB",Midlands,The Shrewsbury And Telford Hospital NHS Trust
+RYJ,Z9B2Z,West and North London ICB,London,Imperial College Healthcare NHS Trust
+RYR,S9B9J,Surrey and Sussex ICB,South East,University Hospitals Sussex NHS Foundation Trust

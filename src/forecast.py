@@ -1,0 +1,85 @@
+"""Produce the live 12-month forecast for every trust, ICB, region and England.
+
+Picks the model + reconciliation method with the lowest backtest MASE (averaged over the four
+hierarchy levels), refits on all data to the latest month, and writes coherent forecasts with
+80% and 95% intervals.
+"""
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from scipy.stats import norm
+
+sys.path.insert(0, str(Path(__file__).parent))
+from backtest import COMBO, RESID_WINDOW, RESULTS, VAR_POWER, load  # noqa: E402
+from hierarchy import shrink_cov  # noqa: E402
+from models import base_forecast, covid_adjust  # noqa: E402
+
+
+def best_config(measure: str) -> tuple[str, str, str]:
+    """Lowest average-over-levels MASE across every COVID treatment that has been backtested."""
+    frames = []
+    for f in RESULTS.glob(f"backtest_summary_{measure}_*.csv"):
+        d = pd.read_csv(f)
+        d["covid"] = f.stem.rsplit("_", 1)[-1]
+        frames.append(d)
+    s = pd.concat(frames)
+    s = s[s["model"] != "snaive"]
+    model, recon, covid = s.groupby(["model", "recon", "covid"])["MASE"].mean().idxmin()
+    return model, recon, covid
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--measure", default="attendances")
+    ap.add_argument("--horizon", type=int, default=12)
+    a = ap.parse_args()
+
+    H, y = load(a.measure)
+    model, recon, covid = best_config(a.measure)
+    adj = y.loc["2021-07":] if covid == "post" else covid_adjust(y, covid)
+    if model == "combo":
+        parts = [base_forecast(adj, a.horizon, m, H.levels) for m in COMBO]
+        fc = sum(p[0] for p in parts) / len(parts)
+        res = sum(p[1] for p in parts) / len(parts)
+    else:
+        fc, res = base_forecast(adj, a.horizon, model, H.levels)
+    r = res.iloc[-RESID_WINDOW:].to_numpy()
+    r = r[~np.isnan(r).any(axis=1)]
+    if recon == "base":
+        P, yhat = np.eye(H.n), fc.to_numpy()
+    else:
+        G = H.G(recon, residuals=r, history=adj.iloc[-12:].to_numpy())
+        P, yhat = H.S @ G, H.reconcile(fc.to_numpy(), G)
+    var1 = np.clip(np.diag(P @ shrink_cov(r) @ P.T), 1e-6, None)
+
+    rows = []
+    for h in range(1, a.horizon + 1):
+        sd = np.sqrt(var1 * h ** VAR_POWER)
+        mu = yhat[h - 1]
+        rows.append(pd.DataFrame({
+            "month": fc.index[h - 1], "h": h, "series": H.ids, "level": H.levels,
+            "name": [H.names[i] for i in H.ids], "forecast": mu,
+            "lo80": mu - norm.ppf(0.9) * sd, "hi80": mu + norm.ppf(0.9) * sd,
+            "lo95": mu - norm.ppf(0.975) * sd, "hi95": mu + norm.ppf(0.975) * sd,
+        }))
+    out = pd.concat(rows, ignore_index=True)
+    out["model"], out["recon"], out["covid"] = model, recon, covid
+    out.to_csv(RESULTS / f"forecast_{a.measure}.csv", index=False)
+
+    hist = y.stack().rename("actual").reset_index()
+    hist.columns = ["month", "series", "actual"]
+    hist.to_csv(RESULTS / f"history_{a.measure}.csv", index=False)
+
+    eng = out[out.series == "England"]
+    check = out[out.level == "Trust"].groupby("month").forecast.sum().to_numpy() - eng.forecast.to_numpy()
+    print(f"{a.measure}: model={model}, recon={recon}, covid={covid}; max coherence gap (trusts vs England) = {np.abs(check).max():.6f}")
+    print(eng[["month", "forecast", "lo80", "hi80"]].round(0).to_string(index=False))
+
+
+if __name__ == "__main__":
+    main()
