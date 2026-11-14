@@ -8,3 +8,4 @@ results/backtest_*_impute.parquet
 results/backtest_*_post.parquet
 results/backtest_*_none.parquet
 results/four_hour_backtest*.parquet
+results/pipeline_log.txt

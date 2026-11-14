@@ -10,21 +10,16 @@ Probabilistic  : CRPS and 80% / 95% interval coverage from Gaussian intervals wh
 from __future__ import annotations
 
 import argparse
-import sys
 from concurrent.futures import ProcessPoolExecutor
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-sys.path.insert(0, str(Path(__file__).parent))
-from hierarchy import Hierarchy, shrink_cov  # noqa: E402
-from models import base_forecast, covid_adjust  # noqa: E402
+from .config import HIERARCHY, PANEL, PROC, RESULTS  # noqa: F401
+from .hierarchy import Hierarchy, shrink_cov
+from .models import base_forecast, covid_adjust
 
-ROOT = Path(__file__).resolve().parents[1]
-PROC = ROOT / "data" / "processed"
-RESULTS = ROOT / "results"
 MODELS = ["snaive", "ets", "sarima", "lgbm"]
 COMBO = ["ets", "sarima", "lgbm"]  # equal-weight ensemble of these three
 RESID_WINDOW = 36   # months of in-sample residuals used for W
@@ -33,8 +28,8 @@ RECON = ["base", "bu", "td", "ols", "wls_struct", "mint_shrink"]
 
 
 def load(measure: str = "attendances"):
-    panel = pd.read_csv(PROC / "trust_month_panel.csv", parse_dates=["month"])
-    hier = pd.read_csv(PROC / "hierarchy.csv")
+    panel = pd.read_csv(PANEL, parse_dates=["month"])
+    hier = pd.read_csv(HIERARCHY)
     H = Hierarchy(hier)
     wide = panel.pivot(index="month", columns="trust_code", values=measure).asfreq("MS")
     return H, H.aggregate(wide)
@@ -96,7 +91,7 @@ _H_CACHE = None
 
 def _init(hier_ids):
     global _H_CACHE
-    hier = pd.read_csv(PROC / "hierarchy.csv")
+    hier = pd.read_csv(HIERARCHY)
     _H_CACHE = Hierarchy(hier)
 
 

@@ -56,7 +56,7 @@ for damped in [False, True]:
           f"phi={fit.params.get('damping_trend', 1):.2f}  12-month MAPE={mape:.2%}  AIC={fit.aic:.1f}")
 ```
 
-Read the fitted parameters. A high α means the level reacts quickly to new data. φ shows how strongly the trend is damped. On this single origin the undamped model happens to win. One origin is one sample, though (chapter 02). Damping is the widely recommended default for longer horizons (FPP3 §8.2) because it limits the damage when a trend stops, and that is why the repo uses it. A good exercise is to add an undamped ETS to `src/models.py` and see what the full backtest says.
+Read the fitted parameters. A high α means the level reacts quickly to new data. φ shows how strongly the trend is damped. On this single origin the undamped model happens to win. One origin is one sample, though (chapter 02). Damping is the widely recommended default for longer horizons (FPP3 §8.2) because it limits the damage when a trend stops, and that is why the repo uses it. A good exercise is to add an undamped ETS to `src/nhsae/models.py` and see what the full backtest says.
 
 ## 3. Practical notes
 

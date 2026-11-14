@@ -20,14 +20,10 @@ pressure sits, so thresholds here are set relative to Type 1 performance, not th
 """
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).parent))
-from backtest import PROC, RESULTS  # noqa: E402
+from .config import HIERARCHY, PANEL, RESULTS
 
 QUANTILES = [0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95]
 COVID_TARGETS = (pd.Timestamp("2020-03-01"), pd.Timestamp("2021-06-01"))
@@ -37,10 +33,13 @@ FEATURES = ["perf_last", "perf_last3", "perf_same_month_ly", "perf_last12", "per
 
 
 def load_panel() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    p = pd.read_csv(PROC / "trust_month_panel.csv", parse_dates=["month"])
+    p = pd.read_csv(PANEL, parse_dates=["month"])
     perf = p.pivot(index="month", columns="trust_code", values="pct_within_4h").asfreq("MS")
     att = p.pivot(index="month", columns="trust_code", values="attendances").asfreq("MS")
     adm = p.pivot(index="month", columns="trust_code", values="emergency_admissions").asfreq("MS")
+    # national Type 1 performance from reported figures (breaches and attendances on the same recording basis)
+    tot = p.groupby("month")[["over_4h", "attendances_reported"]].sum().asfreq("MS")
+    perf.attrs["national"] = (1 - tot.over_4h / tot.attendances_reported).to_numpy()
     return perf, att, adm
 
 
@@ -49,7 +48,7 @@ def make_rows(perf, att, adm, o: int, h: int, demand_target: np.ndarray) -> pd.D
     months = perf.index
     tgt = months[o] + pd.DateOffset(months=h)
     P, A, M = perf.to_numpy(), att.to_numpy(), adm.to_numpy()
-    nat = 1 - (A * (1 - P)).sum(1) / A.sum(1)          # national Type 1 performance by month
+    nat = perf.attrs["national"]                         # national Type 1 performance by month
     d = months.days_in_month.to_numpy(float)[:, None]
     rate = A / d                                          # daily attendances
     base = rate[o - 11:o + 1].mean(0)
@@ -234,7 +233,7 @@ def live() -> pd.DataFrame:
     qs = live[[f"q{int(a * 100):02d}" for a in QUANTILES]].to_numpy()
     live["p_below_60"] = [prob_below(r, 0.60) for r in qs]
     live["p_worse_than_ly"] = [prob_below(qs[i], live.perf_same_month_ly.iloc[i]) for i in range(len(live))]
-    hier = pd.read_csv(PROC / "hierarchy.csv")
+    hier = pd.read_csv(HIERARCHY)
     live = live.merge(hier[["trust_code", "trust_name", "icb_name", "region_name"]], on="trust_code")
     live.to_csv(RESULTS / "four_hour_forecast.csv", index=False)
 
@@ -252,7 +251,8 @@ def main():
     top = (w.groupby(["trust_name", "region_name"]).agg(median_perf=("q50", "mean"), p_below_60=("p_below_60", "mean"))
            .sort_values("p_below_60", ascending=False))
     print("\nWinter (Dec–Feb) highest-risk trusts:\n", top.head(10).round(3).to_string())
-    print("\nfeature importance:\n", pd.read_csv(RESULTS / "four_hour_feature_importance.csv").round(3).to_string(index=False))
+    imp = pd.read_csv(RESULTS / "four_hour_feature_importance.csv")
+    print("\nfeature importance:\n", imp.round(3).to_string(index=False))
 
 
 if __name__ == "__main__":

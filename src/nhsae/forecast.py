@@ -7,17 +7,15 @@ hierarchy levels), refits on all data to the latest month, and writes coherent f
 from __future__ import annotations
 
 import argparse
-import sys
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-sys.path.insert(0, str(Path(__file__).parent))
-from backtest import COMBO, RESID_WINDOW, RESULTS, VAR_POWER, load  # noqa: E402
-from hierarchy import shrink_cov  # noqa: E402
-from models import base_forecast, covid_adjust  # noqa: E402
+from .backtest import COMBO, RESID_WINDOW, VAR_POWER, load
+from .config import RESULTS
+from .hierarchy import shrink_cov
+from .models import base_forecast, covid_adjust
 
 
 def best_config(measure: str) -> tuple[str, str, str]:
@@ -96,7 +94,8 @@ def main():
 
     eng = out[out.series == "England"]
     check = out[out.level == "Trust"].groupby("month").forecast.sum().to_numpy() - eng.forecast.to_numpy()
-    print(f"{a.measure}: model={model}, recon={recon}, covid={covid}; max coherence gap (trusts vs England) = {np.abs(check).max():.6f}")
+    print(f"{a.measure}: model={model}, recon={recon}, covid={covid}; "
+          f"max coherence gap (trusts vs England) = {np.abs(check).max():.6f}")
     print(eng.set_index("month")[["forecast", "lo80", "hi80"]].round(0).to_string())
 
 

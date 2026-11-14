@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nhs-ae-demand-forecast"
+version = "0.2.0"
+description = "Coherent hierarchical forecasts of NHS A&E demand (trust → ICB → region → England) and 4-hour performance risk"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    "lightgbm>=4.3",
+    "scikit-learn>=1.4",
+    "xlrd>=2.0",
+    "pyarrow>=14.0",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.5", "jupyter", "nbconvert", "jupytext"]
+dashboard = ["streamlit>=1.40", "plotly>=5.20"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 125
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = [
+    "E741",  # `l` is the standard name in the Easter algorithm
+    "B905",  # zip() over arrays of known equal length
+]
+
+[tool.ruff.lint.per-file-ignores]
+"notebooks/src/*.py" = ["E402", "B018", "E501"]  # notebook cells: imports mid-file, bare expressions display output
+"app/streamlit_app.py" = ["E501"]  # long f-strings in dashboard copy
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

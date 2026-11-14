@@ -17,16 +17,13 @@ to the nominal 80% / 95% wins for each measure, and "keep the model-based interv
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-sys.path.insert(0, str(Path(__file__).parent))
-from backtest import RESULTS  # noqa: E402
-from forecast import best_config  # noqa: E402
+from .config import RESULTS
+from .forecast import best_config
 
 LEVELS = ["England", "Region", "ICB", "Trust"]
 QS = {"80": 0.80, "95": 0.95}

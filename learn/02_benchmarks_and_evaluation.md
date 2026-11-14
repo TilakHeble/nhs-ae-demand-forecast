@@ -26,7 +26,7 @@ origin 2: [train.............] → forecast 12 months
 origin 3: [train................] → forecast 12 months
 ```
 
-`src/backtest.py` uses 9 origins, every 3 months from October 2023 to October 2025, each forecasting 12 months ahead.
+`src/nhsae/backtest.py` uses 9 origins, every 3 months from October 2023 to October 2025, each forecasting 12 months ahead.
 
 ## 3. Error metrics
 

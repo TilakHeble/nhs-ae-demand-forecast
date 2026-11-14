@@ -42,7 +42,7 @@ G (m × n) maps all the base forecasts to bottom-level forecasts, and S adds the
 | WLS (structural) | (S′Λ⁻¹S)⁻¹S′Λ⁻¹, Λ = diag(number of trusts under each node) | aggregates get less weight per unit of size |
 | **MinT** | (S′W⁻¹S)⁻¹S′W⁻¹, W = covariance of base-forecast errors | **minimises the total variance of the reconciled errors** among unbiased linear methods |
 
-**MinT** (Wickramasuriya, Athanasopoulos & Hyndman, 2019) is a generalised least squares projection. Series with large, correlated errors are trusted less. The full W (164 × 164) can't be estimated reliably from about 50 residuals, so it is **shrunk** towards its diagonal (Schäfer–Strimmer). See `src/hierarchy.py::shrink_cov`.
+**MinT** (Wickramasuriya, Athanasopoulos & Hyndman, 2019) is a generalised least squares projection. Series with large, correlated errors are trusted less. The full W (164 × 164) can't be estimated reliably from about 50 residuals, so it is **shrunk** towards its diagonal (Schäfer–Strimmer). See `src/nhsae/hierarchy.py::shrink_cov`.
 
 ## Try it: reconcile a toy hierarchy by hand
 
@@ -67,9 +67,8 @@ The output shows bottom-up ignoring England's 105 entirely, OLS splitting the di
 ## Try it on the real hierarchy
 
 ```python
-import sys; sys.path.insert(0, "src")
 import pandas as pd
-from hierarchy import Hierarchy
+from nhsae.hierarchy import Hierarchy
 hier = pd.read_csv("data/processed/hierarchy.csv")
 H = Hierarchy(hier)
 print(H.S.shape, "→", dict(pd.Series(H.levels).value_counts()))

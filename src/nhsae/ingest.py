@@ -13,7 +13,8 @@ from pathlib import Path
 
 import pandas as pd
 
-RAW = Path(__file__).resolve().parents[1] / "data" / "raw"
+from .config import ICB_MAPPING, RAW
+from .contracts import validate_monthly
 
 # canonical name -> regex matched against a normalised (lower-case, collapsed) header
 COLUMN_PATTERNS = {
@@ -94,11 +95,12 @@ def load_monthly(raw_dir: Path = RAW) -> pd.DataFrame:
 
     # a month can appear twice if a revised file was published; keep the last-published copy
     df = df.drop_duplicates(subset=["month", "org_code"], keep="first")
-    return df.drop(columns=["period"]).sort_values(["month", "org_code"]).reset_index(drop=True)
+    df = df.drop(columns=["period"]).sort_values(["month", "org_code"]).reset_index(drop=True)
+    return validate_monthly(df)
 
 
 def load_icb_mapping(raw_dir: Path = RAW) -> pd.DataFrame:
-    m = pd.read_excel(raw_dir / "nhs_ae_System-Mapping-Oct-26.xls", header=7).iloc[:, 1:6]
+    m = pd.read_excel(raw_dir / ICB_MAPPING.name, header=7).iloc[:, 1:6]
     m.columns = ["org_code", "org_name_map", "icb_code", "icb_name", "region_name"]
     m = m.dropna(subset=["org_code"])
     m["org_code"] = m["org_code"].astype(str).str.strip().str.upper()
@@ -108,6 +110,6 @@ def load_icb_mapping(raw_dir: Path = RAW) -> pd.DataFrame:
     return m.drop_duplicates("org_code")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     d = load_monthly()
     print(d.shape, d.month.min().date(), d.month.max().date(), d.month.nunique())

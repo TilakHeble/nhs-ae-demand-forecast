@@ -16,7 +16,7 @@ To forecast 12 months ahead:
 - **Recursive:** train a one-step model; predict t+1, feed that prediction back in as a lag, predict t+2, and so on. Errors compound.
 - **Direct:** train with horizon h as a feature (or one model per h). The target is y_{t+h}, and features use only information at time t. No error feedback.
 
-`src/models.py::lgbm_forecast` is **direct**. Each training row is (series, origin o, horizon h), with the target at o + h and every feature built from data up to o.
+`src/nhsae/models.py::lgbm_forecast` is **direct**. Each training row is (series, origin o, horizon h), with the target at o + h and every feature built from data up to o.
 
 ## 3. Feature engineering, the safe way
 

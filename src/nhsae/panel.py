@@ -9,14 +9,15 @@ then attach today's ICB and region from NHS England's provider-to-ICB mapping.
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
 
-from ingest import load_icb_mapping, load_monthly
+from .config import HIERARCHY, PANEL, PROC
+from .contracts import validate_panel
+from .ingest import load_icb_mapping, load_monthly
+from .reclass import detect as detect_reclass
+from .reclass import restate as restate_reclass
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "data" / "processed"
+OUT = PROC
 
 # retired code -> successor code, with the first month the successor reported the combined activity.
 # Every pair was checked by confirming the combined series is continuous across the merger month.
@@ -51,7 +52,7 @@ MEASURES = {
 }
 
 
-def build(min_months: int = 36) -> tuple[pd.DataFrame, pd.DataFrame]:
+def build(min_months: int = 36) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     raw = load_monthly()
     icb = load_icb_mapping()
 
@@ -61,7 +62,7 @@ def build(min_months: int = 36) -> tuple[pd.DataFrame, pd.DataFrame]:
         df[name] = df[[c for c in cols if c in df.columns]].sum(axis=1)
 
     t1 = (df[df["att_type1"] > 0]
-          .groupby(["trust_code", "month"], as_index=False)[list(MEASURES)].sum())
+          .groupby(["trust_code", "month"], as_index=False)[list(MEASURES) + ["att_type1", "att_other"]].sum())
 
     last = t1["month"].max()
     current = set(t1.loc[t1["month"] == last, "trust_code"])
@@ -85,21 +86,30 @@ def build(min_months: int = 36) -> tuple[pd.DataFrame, pd.DataFrame]:
         raise ValueError(f"Trusts with no ICB mapping: {missing.trust_code.tolist()}")
 
     panel = t1.merge(hier, on="trust_code")
-    panel["pct_within_4h"] = 1 - panel["over_4h"] / panel["attendances"]
-    return panel, hier
+    # 4-hour performance uses the figures as reported (breaches and attendances on the same basis)
+    panel["attendances_reported"] = panel["attendances"]
+    panel["pct_within_4h"] = 1 - panel["over_4h"] / panel["attendances_reported"]
+    # demand series: restate Type 1 history onto each trust's current recording basis (see reclass.py)
+    events = detect_reclass(panel[["trust_code", "month", "att_type1", "att_other"]])
+    panel["attendances"] = restate_reclass(panel, events, "attendances")
+    panel = panel.drop(columns=["att_type1", "att_other"])
+    validate_panel(panel, hier)
+    return panel, hier, events
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    panel, hier = build()
-    panel.to_csv(OUT / "trust_month_panel.csv", index=False)
-    hier.to_csv(OUT / "hierarchy.csv", index=False)
+    panel, hier, events = build()
+    named = events.merge(hier[["trust_code", "trust_name"]], on="trust_code")
+    named.to_csv(OUT / "type1_reclassifications.csv", index=False)
+    panel.to_csv(PANEL, index=False)
+    hier.to_csv(HIERARCHY, index=False)
     pd.DataFrame([{"retired_code": k, "successor_code": v[0], "first_combined_month": v[1], "note": v[2]}
                   for k, v in MERGERS.items()]).to_csv(OUT / "trust_mergers.csv", index=False)
     print(f"panel {panel.shape}, trusts={hier.trust_code.nunique()}, ICBs={hier.icb_code.nunique()}, "
           f"regions={hier.region_name.nunique()}, months={panel.month.nunique()}")
-    print("months with gaps:", panel["attendances"].isna().sum())
+    print(f"Type 1 recording changes restated: {len(events)} events at {events.trust_code.nunique()} trusts")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

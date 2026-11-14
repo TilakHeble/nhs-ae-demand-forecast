@@ -1,5 +1,7 @@
 # Learn time series forecasting, from basics to hierarchical reconciliation
 
+An 8-lesson course plus interview questions, a cheat sheet and a glossary.
+
 A self-contained course built on the data in this repository: real NHS A&E demand for England, 7 regions, 36 ICBs and 120 trusts. Every chapter explains the idea, gives the maths you need (no more), and ends with code you can run from the repo root.
 
 | # | Chapter | You will be able to… |
@@ -12,7 +14,8 @@ A self-contained course built on the data in this repository: real NHS A&E deman
 | 06 | [Structural breaks: COVID and mergers](06_structural_breaks.md) | handle interventions by imputing, truncating or adding dummies; restate history after mergers |
 | 07 | [Probabilistic forecasts](07_probabilistic_forecasting.md) | produce and score intervals and quantiles (CRPS, pinball, coverage); conformal calibration |
 | 08 | [Hierarchical forecasting and reconciliation](08_hierarchical_reconciliation.md) | build the summing matrix; derive bottom-up, top-down, OLS, WLS and MinT; know when each wins |
-| 09 | [Interview questions](09_interview_questions.md) | answer the time series questions data science interviews actually ask |
+| ✦ | [Interview questions](interview_questions.md) | answer the time series questions data science interviews actually ask |
+| ✦ | [Cheat sheet](cheat_sheet.md) · [Glossary](glossary.md) | one-page reference: workflow, models, metrics, reconciliation, traps; NHS and forecasting terms |
 
 **How to use it:** read the chapters in order the first time. Run every code block. Each one is short and uses `data/processed/trust_month_panel.csv`, so you are always working with real data. Install requirements with `pip install -r requirements-dev.txt`.
 

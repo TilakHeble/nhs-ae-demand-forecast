@@ -53,7 +53,7 @@ print(pd.Series(acf(post, nlags=24), name="acf").round(2).iloc[[1, 2, 3, 6, 12, 
 
 ## 3. Calendar effects: forecast the daily rate
 
-February has 28 days and March has 31, so February "drops" by about 10% even if nothing changed. If you model raw monthly totals, the model wastes effort learning this. **Divide by days in the month, forecast the daily rate, then multiply back.** Every model in `src/models.py` does this. It is a two-line fix that removes a whole source of error.
+February has 28 days and March has 31, so February "drops" by about 10% even if nothing changed. If you model raw monthly totals, the model wastes effort learning this. **Divide by days in the month, forecast the daily rate, then multiply back.** Every model in `src/nhsae/models.py` does this. It is a two-line fix that removes a whole source of error.
 
 Easter is the other big calendar effect for health data. It moves between March and April and changes how services run around bank holidays. The LightGBM model in this repo gets an "Easter in this month" feature for that reason.
 

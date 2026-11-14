@@ -29,8 +29,10 @@ def load(measure):
     fc = pd.read_csv(RES / f"forecast_{measure}.csv", parse_dates=["month"])
     hist = pd.read_csv(RES / f"history_{measure}.csv", parse_dates=["month"])
     covid = fc["covid"].iloc[0]
-    summ = pd.read_csv(RES / f"backtest_summary_{measure}.csv").query("covid == @covid")
-    hz = pd.read_csv(RES / f"backtest_by_horizon_{measure}.csv").query("covid == @covid")
+    summ = pd.read_csv(RES / f"backtest_summary_{measure}.csv")
+    summ = summ[summ.covid == covid]
+    hz = pd.read_csv(RES / f"backtest_by_horizon_{measure}.csv")
+    hz = hz[hz.covid == covid]
     return fc, hist, summ, hz
 
 
@@ -66,7 +68,9 @@ def prob_below(q: np.ndarray, thr: float) -> float:
 st.title("🏥 NHS A&E Demand Forecast")
 st.caption("Coherent 12-month forecasts of Type 1 A&E demand for 120 acute trusts in England, plus their 36 ICBs, "
            "7 regions and the national total. The forecasts are reconciled so every level adds up. "
-           "Source: NHS England Monthly A&E Attendances & Emergency Admissions, Apr 2018 – latest month.")
+           "Source: NHS England Monthly A&E Attendances & Emergency Admissions, Apr 2018 – latest month. "
+           "History is restated onto today's trusts (21 mergers) and each trust's current Type 1 recording basis "
+           "(32 recording changes when urgent treatment centres opened or closed).")
 
 with st.sidebar:
     measure_label = st.radio("Measure", list(MEASURES))

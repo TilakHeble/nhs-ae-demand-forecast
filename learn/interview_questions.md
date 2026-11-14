@@ -1,9 +1,9 @@
-# 09 · Interview questions on time series
+# Interview questions on time series
 
 Short model answers, each tied to something in this repo you can point to.
 
 **1. Why can't you use random K-fold cross-validation on a time series?**
-It trains on the future to predict the past, so errors look better than they will be in production. Use rolling-origin evaluation: train up to a cut-off, forecast forward, and repeat for several cut-offs. *Repo: `src/backtest.py`, 9 origins × 12 horizons.*
+It trains on the future to predict the past, so errors look better than they will be in production. Use rolling-origin evaluation: train up to a cut-off, forecast forward, and repeat for several cut-offs. *Repo: `src/nhsae/backtest.py`, 9 origins × 12 horizons.*
 
 **2. What's a good benchmark for monthly demand?**
 Seasonal naive (same month last year), or seasonal naive with drift. Report MASE, which is the error relative to seasonal naive, so it's clear whether the model earns its complexity.
@@ -39,7 +39,7 @@ Check coverage against nominal and use a proper score such as CRPS or pinball lo
 A confidence interval covers a parameter, such as the mean. A prediction interval covers a future observation, so it also includes the noise and is wider.
 
 **13. How would you forecast 4-hour performance, which is a ratio?**
-Ratios don't add up a hierarchy, so I didn't reconcile it. I used a quantile LightGBM with recent performance, national pressure and the demand forecast as features. Then I turned the quantiles into P(performance < threshold) and checked calibration with Brier scores. *Repo: `src/four_hour.py`.*
+Ratios don't add up a hierarchy, so I didn't reconcile it. I used a quantile LightGBM with recent performance, national pressure and the demand forecast as features. Then I turned the quantiles into P(performance < threshold) and checked calibration with Brier scores. *Repo: `src/nhsae/four_hour.py`.*
 
 **14. A stakeholder says "the forecast was wrong last month". How do you respond?**
 Ask whether the outcome was inside the interval. A point forecast is the middle of a distribution, and 1 month in 5 should fall outside an 80% interval. If misses are systematic (bias), investigate. Emergency admissions here have run below forecast since spring 2024, which is worth raising with operational teams rather than tuning away.

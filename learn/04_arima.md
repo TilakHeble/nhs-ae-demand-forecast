@@ -26,7 +26,7 @@ In practice you often use automatic selection (`auto_arima`, or AICc search), bu
 
 ## 3. The airline model
 
-**ARIMA(0,1,1)(0,1,1)₁₂** on the log series is the "airline model" (Box & Jenkins, 1970, fitted to airline passenger data). It is equivalent to a particular exponential smoothing model and is a famously strong default for monthly seasonal data. That's what `src/models.py` uses: one robust specification applied to all 164 series, rather than 164 separately tuned models that would overfit.
+**ARIMA(0,1,1)(0,1,1)₁₂** on the log series is the "airline model" (Box & Jenkins, 1970, fitted to airline passenger data). It is equivalent to a particular exponential smoothing model and is a famously strong default for monthly seasonal data. That's what `src/nhsae/models.py` uses: one robust specification applied to all 164 series, rather than 164 separately tuned models that would overfit.
 
 ## Try it: fit and diagnose
 
@@ -58,4 +58,4 @@ print("Ljung-Box p-value (residuals white noise if > 0.05):", round(float(lb.lb_
 - ETS has no stationarity requirement and is easier to explain. ARIMA can include external regressors (that makes it SARIMAX) and models short-term autocorrelation more flexibly.
 - **Combining them usually beats choosing between them.** This project's best attendance forecasts average ETS, SARIMA and LightGBM.
 
-**COVID gives a lesson here.** The airline model differences twice, so a big shock 12 months ago echoes into this year's forecast through the seasonal difference. That is why SARIMA benefited most from replacing the COVID months with a counterfactual. Its MASE improved from 0.677 to 0.591 when trained on imputed history rather than truncated data.
+**COVID gives a lesson here.** The airline model differences twice, so a big shock 12 months ago echoes into this year's forecast through the seasonal difference. That is why SARIMA benefited most from replacing the COVID months with a counterfactual. Its MASE improved from 0.634 to 0.563 when trained on imputed history rather than truncated data.
