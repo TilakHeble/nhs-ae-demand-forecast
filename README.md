@@ -1,6 +1,6 @@
 # NHS A&E Demand Forecast: forecasts that add up from trust to England
 
-**Coherent 12-month forecasts of A&E demand for every acute trust, ICB and region in England, and the national total**, built from NHS England's official monthly A&E statistics.
+**Coherent 12-month forecasts of A&E demand for every acute trust, ICB and region in England, and the national total**, with calibrated uncertainty and a **4-hour performance risk score for every trust**. Built from NHS England's official monthly A&E statistics.
 
 > Project 6a in my one-project-per-model portfolio. **Model family: time series** (ETS, SARIMA, global gradient boosting, ensembles) **and hierarchical forecast reconciliation** (bottom-up, top-down, OLS, WLS, MinT).
 
@@ -101,8 +101,53 @@ Winning configuration: **Ensemble + MinT-shrink, trained on COVID-imputed histor
 - **The ensemble wins for both measures.** The three models make different mistakes, so averaging them works better than any single model.
 - **MinT beats bottom-up and top-down at every level once you use an ensemble.** Top-down is consistently the worst: splitting England by historical shares misses trust-level trends. For emergency admissions, MinT cut England-level MASE by 9% compared with the unreconciled base forecasts (0.415 → 0.377).
 - **There is no universal COVID fix.** For attendances, dropping the COVID years was best. Demand patterns since 2021 differ enough that older data hurts more than it helps. For emergency admissions, which have more trust-level noise, the extra years of imputed history were worth keeping. The same choice tells a single SARIMA the opposite: imputation helped it (0.591 vs 0.677). This is why the backtest searches COVID treatment alongside the model.
-- **Interval calibration needs testing.** The first version scaled variance linearly with the horizon, and the 80% intervals covered 96–100% of outcomes, which is far too wide to plan with. Using recent residuals (the last 36 months) and √h variance growth gets attendances close to the nominal 80%. Emergency-admission intervals are still too narrow at ICB and trust level: listed under next steps.
+- **Interval calibration needs testing.** The first version scaled variance linearly with the horizon, and the 80% intervals covered 96–100% of outcomes, which is far too wide to plan with. Using recent residuals (the last 36 months) and √h variance growth gets attendances close to the nominal 80%. Emergency admissions needed conformal calibration (see below).
 - **A global LightGBM is not automatically better.** On its own it ranked mid-table. Its value here is as a diverse member of the ensemble.
+
+### Calibrated intervals: split conformal, chosen by an online test
+
+The emergency-admission intervals promised 80% but covered only 66–73% at ICB and trust level. [`src/calibrate.py`](src/calibrate.py) compares four ways of setting interval width:
+- model-based (no adjustment)
+- a conformal multiplier per level and horizon band
+- a conformal multiplier per level
+- one pooled conformal multiplier
+
+Each is tested **online**: at every origin it is calibrated only on forecasts whose outcomes were already known by then. The option closest to nominal coverage wins for each measure.
+
+| Measure | Chosen | Mean gap from nominal coverage (before → after) | 80% coverage, ICB / Trust (before → after) |
+|---|---|---|---|
+| Attendances | model-based (already the best) | 0.112 | 81% / 84% |
+| Emergency admissions | pooled conformal | 0.142 → **0.057** | 66% / 73% → **75% / 80%** |
+
+The finer-grained options *lost*. England is a single series, so a multiplier fitted to England alone is very noisy. A clear bias-variance trade-off.
+
+One thing calibration can't fix: **emergency admissions via Type 1 have come in roughly 1–3% below forecast (England level) at every origin since April 2024.** That is a sustained shift, not noise, and it's flagged as a question for operational teams rather than tuned away.
+
+## 4-hour performance risk
+
+Demand forecasts matter because of what they do to waits. [`src/four_hour.py`](src/four_hour.py) forecasts each trust's **Type 1 4-hour performance** for the next 12 months. 4-hour performance is a ratio, so it can't be reconciled like demand.
+
+- **Model:** global LightGBM with the quantile objective at 7 levels (5th–95th percentile), direct multi-horizon.
+- **Features:**
+  - recent trust performance and year-on-year change
+  - national pressure
+  - the trust's admission rate
+  - **demand pressure:** the reconciled demand forecast for the target month relative to the trust's last-12-month average. In the backtest this uses the demand forecast actually available at each origin, so the result is honest.
+- **Calibration:** conformalised quantile regression, applied online.
+- **Output:** P(performance < any threshold) for every trust and month. The dashboard lets you set the threshold.
+
+**Backtest** (7 origins, 12 months ahead, 10,080 trust-month forecasts):
+
+| | Result |
+|---|---|
+| Median forecast error | **3.84** percentage points, against 4.27 for the best naive rule (last 3 months) and 4.99 for same month last year |
+| Brier skill, P(below 60%) | **54%** better than always predicting the base rate |
+| Brier skill, P(worse than same month last year) | **23%** |
+| 80% / 90% range coverage | 73% / 84% for the raw quantiles → **83% / 90%** after conformal calibration |
+
+Recent performance dominates the model, as you'd expect: flow problems persist (last month and last 3 months together carry 60% of the LightGBM gain). National pressure carries the next-largest share (11%). The demand forecast carries about 3%, which suggests that at monthly resolution a trust's own recent flow says more about its 4-hour performance than its demand does.
+
+**This winter (Dec 2026 – Feb 2027):** median forecast Type 1 performance across trusts is about 58%. 72 of 120 trusts are more likely than not to be below 60%, and 54 are more likely than not to do worse than last winter. The national 82% objective for 2026/27 covers all A&E types, including urgent treatment centres. This model covers Type 1 departments only, where performance is lowest.
 
 ### Live forecast: November 2026 to October 2027
 
@@ -114,6 +159,7 @@ England Type 1 attendances are forecast to grow about **3.7% year on year**, in 
 
 - **Forecast:** pick a region, ICB or trust and see the reconciled forecast with 80% and 95% intervals
 - **Winter outlook:** trusts ranked by forecast change in December–February demand
+- **4-hour risk:** set a threshold and get each trust's probability of falling below it this winter, a forecast fan chart, and the backtest evidence and calibration plot
 - **Model comparison:** every model × reconciliation method at every level (MASE, CRPS, MAPE, coverage), plus accuracy by horizon
 - **How reconciliation works:** plain-English explainer
 
@@ -124,6 +170,8 @@ pip install -r requirements-dev.txt
 make data       # build the trust-month panel + hierarchy from data/raw
 make backtest   # ~25 minutes on 2 cores
 make forecast   # refit the winning configuration, write results/forecast_*.csv
+make calibrate  # choose interval calibration online, refresh forecasts
+make four_hour  # 4-hour performance risk model
 make app
 ```
 
@@ -139,6 +187,9 @@ src/models.py       COVID adjustment, seasonal naive, ETS, SARIMA, global LightG
 src/backtest.py     rolling-origin evaluation (MASE, MAPE, CRPS, coverage)
 src/forecast.py     picks the best configuration from the backtest and forecasts 12 months
 src/report.py       compact result tables
+src/calibrate.py    split-conformal interval calibration, chosen by an online coverage test
+src/four_hour.py    4-hour performance risk: quantile LightGBM, conformal quantiles, threshold probabilities
+learn/              a 9-chapter course: time series basics → ETS → ARIMA → ML → breaks → probabilistic → reconciliation
 app/                Streamlit dashboard
 results/            forecasts, history, backtest summaries
 ```
@@ -146,10 +197,13 @@ results/            forecasts, history, backtest summaries
 ## Limitations and next steps
 
 - **History is restated on today's structure.** One trust move can't be fully separated: North Manchester General moved from Pennine Acute to Manchester University FT in April 2021, before the rest of Pennine joined Northern Care Alliance. ICB-level totals are unaffected because both trusts sit in Greater Manchester.
-- Emergency-admission intervals undercover at ICB and trust level. Next step: horizon-specific empirical calibration or conformal intervals.
-- **4-hour performance risk.** Turn the demand forecast into a probability that each trust misses the 4-hour standard this winter.
-- `learn/` folder: time series from basics to hierarchical reconciliation, as in my earlier projects.
-- Monthly data hides weekly and daily peaks. ECDS daily data would allow forecasts for staffing rotas.
+- The 4-hour model covers Type 1 departments only. Trust-level performance against the all-types standard also depends on attributed urgent treatment centre activity (NHS England's attribution file is in `data/raw/`). That would be the next extension.
+- Emergency admissions show a sustained over-forecast since spring 2024 (see above). An intervention term or a shorter training window may help once the cause is understood.
+- Monthly data hides weekly and daily peaks. ECDS daily data would allow forecasts for staffing rotas. Weather and flu surveillance would be natural leading indicators.
+
+## Learn
+
+The [`learn/`](learn/README.md) folder is a 9-chapter course using this repo's data. It goes from STL decomposition and stationarity, through benchmarks and rolling-origin evaluation, ETS, ARIMA, global ML models and structural breaks, to probabilistic scoring, conformal calibration and the maths of reconciliation (BU/TD/OLS/WLS/MinT). It finishes with a page of interview questions. Every code block runs from the repo root.
 
 ---
 *Data: NHS England, A&E Attendances and Emergency Admissions, © Crown copyright, Open Government Licence v3.0.*

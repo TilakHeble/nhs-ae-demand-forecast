@@ -33,6 +33,27 @@ def best_config(measure: str) -> tuple[str, str, str]:
     return model, recon, covid
 
 
+def interval_bounds(out: pd.DataFrame, measure: str) -> pd.DataFrame:
+    """Gaussian intervals, widened by the conformal multipliers if src/calibrate.py chose them."""
+    import json
+    out = out.assign(mult80=norm.ppf(0.9), mult95=norm.ppf(0.975), interval_method="model-based")
+    meth_file = RESULTS / "interval_method.json"
+    if meth_file.exists() and measure in (meth := json.loads(meth_file.read_text())):
+        keys = meth[measure]["keys"]
+        if keys is not None:
+            mult = pd.read_csv(RESULTS / f"interval_multipliers_{measure}.csv")
+            out = out.drop(columns=["mult80", "mult95"])
+            out["band"] = out.h.map(lambda h: "1-3" if h <= 3 else ("4-6" if h <= 6 else "7-12"))
+            out = (out.merge(mult, on=keys, how="left") if keys
+                   else out.assign(mult80=mult.mult80.iloc[0], mult95=mult.mult95.iloc[0]))
+            out = out.drop(columns=["band"])
+        out["interval_method"] = meth[measure]["method"]
+    for q in ["80", "95"]:
+        out[f"lo{q}"] = (out.forecast - out[f"mult{q}"] * out.sd).clip(lower=0)
+        out[f"hi{q}"] = out.forecast + out[f"mult{q}"] * out.sd
+    return out.drop(columns=["mult80", "mult95"])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--measure", default="attendances")
@@ -63,11 +84,9 @@ def main():
         mu = yhat[h - 1]
         rows.append(pd.DataFrame({
             "month": fc.index[h - 1], "h": h, "series": H.ids, "level": H.levels,
-            "name": [H.names[i] for i in H.ids], "forecast": mu,
-            "lo80": mu - norm.ppf(0.9) * sd, "hi80": mu + norm.ppf(0.9) * sd,
-            "lo95": mu - norm.ppf(0.975) * sd, "hi95": mu + norm.ppf(0.975) * sd,
+            "name": [H.names[i] for i in H.ids], "forecast": mu, "sd": sd,
         }))
-    out = pd.concat(rows, ignore_index=True)
+    out = interval_bounds(pd.concat(rows, ignore_index=True), a.measure)
     out["model"], out["recon"], out["covid"] = model, recon, covid
     out.to_csv(RESULTS / f"forecast_{a.measure}.csv", index=False)
 
@@ -78,7 +97,7 @@ def main():
     eng = out[out.series == "England"]
     check = out[out.level == "Trust"].groupby("month").forecast.sum().to_numpy() - eng.forecast.to_numpy()
     print(f"{a.measure}: model={model}, recon={recon}, covid={covid}; max coherence gap (trusts vs England) = {np.abs(check).max():.6f}")
-    print(eng[["month", "forecast", "lo80", "hi80"]].round(0).to_string(index=False))
+    print(eng.set_index("month")[["forecast", "lo80", "hi80"]].round(0).to_string())
 
 
 if __name__ == "__main__":

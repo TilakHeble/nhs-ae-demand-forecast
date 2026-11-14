@@ -1,0 +1,22 @@
+{
+  "attendances": {
+    "method": "model-based",
+    "keys": null,
+    "mean_abs_coverage_gap": {
+      "model-based": 0.11246555335097,
+      "conformal: level x horizon band": 0.1520075507054674,
+      "conformal: per level": 0.15617146164021162,
+      "conformal: pooled": 0.1599523258377425
+    }
+  },
+  "emergency_admissions": {
+    "method": "conformal: pooled",
+    "keys": [],
+    "mean_abs_coverage_gap": {
+      "model-based": 0.14247685185185188,
+      "conformal: level x horizon band": 0.11203290343915343,
+      "conformal: per level": 0.07844053130511466,
+      "conformal: pooled": 0.056794257054673725
+    }
+  }
+}
